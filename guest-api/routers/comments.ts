@@ -1,8 +1,9 @@
-import express from "express";
+import {Router} from 'express';
 import fileDb from '../fileDb';
 import {CommentMutation} from '../types';
+import {imagesUpload} from '../multer';
 
-const commentsRouter = express.Router();
+const commentsRouter = Router();
 
 commentsRouter.get("/", async (req, res) => {
   const comments = await fileDb.getItems();
@@ -15,7 +16,7 @@ commentsRouter.get("/:id", async (req, res) => {
   return res.send(comment);
 })
 
-commentsRouter.post('/', async (req, res) => {
+commentsRouter.post('/', imagesUpload.single('image'), async (req, res) => {
   if (!req.body) {
     return res.status(400).send({error: 'Data is required'});
   }

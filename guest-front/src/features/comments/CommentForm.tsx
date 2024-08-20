@@ -3,11 +3,13 @@ import React, {useState} from 'react';
 import {useAppDispatch} from '../../app/hooks.ts';
 import {CommentMutation} from '../../types.ts';
 import {createComment} from './commentThunk.ts';
+import {useNavigate} from 'react-router-dom';
 
 const CommentForm = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const [comment, setComment] = useState<CommentMutation>({
-    author: 'anonymous',
+    author: '',
     comment: '',
     image: null,
   });
@@ -17,7 +19,7 @@ const CommentForm = () => {
     setComment(prevState => ({...prevState, [name]: value}));
   }
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {name, files} = e.target;
 
     if(files) {
@@ -28,7 +30,6 @@ const CommentForm = () => {
     }
   }
 
-
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
@@ -38,18 +39,20 @@ const CommentForm = () => {
 
     dispatch(createComment(comment));
     setComment({
-      author: 'Anonymous',
+      author: '',
       comment: '',
       image: null,
     });
+    navigate('/');
   }
 
   return (
     <Stack spacing={2} component="form" onSubmit={handleSubmit} padding={2} border={1} borderColor="grey.300" borderRadius={2}>
       <Typography variant="h6">Add a Comment</Typography>
       <TextField
-        label="Author (optional)"
+        label="Author"
         name='author'
+        type='text'
         value={comment.author}
         onChange={handleInputChange}
       />
@@ -63,7 +66,8 @@ const CommentForm = () => {
       />
       <Input
         type="file"
-        onChange={handleImageChange}
+        name='image'
+        onChange={handleFileChange}
       />
       <Button type="submit" variant="contained" color="primary">Submit</Button>
     </Stack>
